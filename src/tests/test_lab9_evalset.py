@@ -57,3 +57,14 @@ def test_check_rejects_missing_tags(tmp_path, evalset_cli):
     result = evalset_cli("--check")
     assert result.returncode == 1, result.stdout + result.stderr
     assert "failure_modes empty" in result.stdout
+
+
+def test_sha12_normalizes_line_endings(tmp_path):
+    from lab9.evalset import sha12
+
+    lf_path = tmp_path / "eval_lf.jsonl"
+    crlf_path = tmp_path / "eval_crlf.jsonl"
+    lf_path.write_bytes(b'{"item_id":"E-001"}\n')
+    crlf_path.write_bytes(b'{"item_id":"E-001"}\r\n')
+
+    assert sha12(lf_path) == sha12(crlf_path)
